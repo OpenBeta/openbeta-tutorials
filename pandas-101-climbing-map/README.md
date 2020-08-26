@@ -14,14 +14,6 @@ git clone https://github.com/OpenBeta/climbing-data
 
 ### Install Jupyter notebook and  Python dependencies
 ```python
-git clone https://github.com/OpenBeta/openbeta-tutorials
-cd openbeta-tutorials/pandas-101-climbing-map
-pipenv install --skip-lock
-pipenv jupyter notebook
-```
-
-![USA climbing map](./usa-climbing-map.png)
-=======
 # clone this repo
 git clone https://github.com/OpenBeta/openbeta-tutorials
 
