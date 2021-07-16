@@ -20,7 +20,12 @@ areas as points with size corresponding to the number of routes in the area that
 The areas are also colored by this number (black = few routes that fulfill the criteria, yellow = many routes that fulfill the criteria). Hovering over
 each area will display the area name, total number of routes, and the number of routes fulfilling the filter criteria.
 * __route_quality_maps_app.py__ is a Python script that runs a Dash app that allows the user to change the filter criteria and rerun. The same information
-as described in the previous point is included with each map. Currently the app can be started in debug mode on the users local machine.
+as described in the previous point is included with each map. Currently the app can be started in debug mode on the users local machine. Just run the Python
+script thus:
+```
+python route_quality_maps_app.py
+```
+and the output will display a link that can be opened in a browser to display the app.
 * __RouteQualityData.pkl.zip__ contains the data used by the above Python scripts.
 
 ### Notes
