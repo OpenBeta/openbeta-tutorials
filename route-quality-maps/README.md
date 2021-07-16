@@ -10,6 +10,7 @@ These examples were built and tested using Python 3.8.5, with the following pack
 * pandas 1.1.3
 * plotly 5.1.0
 * dash 1.20.0
+
 These are the current (7/16/21) default versions installed using Conda. Probably the examples will work with other versions of Python 3 and packages.
 
 ### Current Status
