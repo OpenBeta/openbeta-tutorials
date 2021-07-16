@@ -26,7 +26,6 @@ script thus:
 ```
 python route_quality_maps_app.py
 ```
-and the output will display a link that can be opened in a browser to display the app.
 * __RouteQualityData.pkl.zip__ contains the data used by the above Python scripts.
 
 ### Notes
