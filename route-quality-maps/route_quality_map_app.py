@@ -42,21 +42,20 @@ app.layout = html.Div([
                      {'label': 'Median ARQI', 'value': 'ARQI_median'}],
             style={'width':'40%'},
             value='Mean Stars'),
+        html.Br(),
         html.Label('Minimum Route Quality: '),
         dcc.Input(
             id='metric_threshold',
             type='number',
             min=0.0, max=4.0, step=0.5,
             placeholder='Min Route Quality',
-            style={'width': '12%', 'display': 'inline-block'}),
-        html.Br(),
+            style={'width': '14%', 'display': 'inline-block'}),
         html.Label(' Min Grade (YDS): '),
         dcc.Input(
             id='min_grade',
             type='text',
             placeholder='Min Grade',
             style={'display': 'inline-block'}),
-        html.Br(),
         html.Label(' Max Grade (YDS): '),
         dcc.Input(
             id='max_grade',
@@ -64,13 +63,13 @@ app.layout = html.Div([
             placeholder='Max Grade (YDS)',
             style={'display': 'inline-block'}),
         html.Br(),
+        html.Br(),
         html.Button('Submit', id='button')
       ], 
       style={'padding': '.3rem', 
              'marginTop': '1rem',
              'marginLeft': '1rem',
              'width': '85%', 
-             'flex-wrap': 'wrap',
              'backgroundColor': 'white',
              'border-radius': '10px',
              'display': 'inline-block'}
