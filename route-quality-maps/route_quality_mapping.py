@@ -38,9 +38,10 @@ def route_quality_map_with_filters(df, fname='quality_map', metric='ARQI_median'
     df_agg['size'] = 0
     sizes = np.linspace(0, sizenorm, num=6)
     size_limits = [(sizes[i], sizes[i+1], (i+1)*7) for i in range(len(sizes)-1)]
-    
+
     for ll,hl,size in size_limits:
-        df_agg.loc[(df_agg['NRGT'] >= ll) & (df_agg['NRGT'] < hl), 'size'] = size
+        df_agg.loc[(df_agg['NRGT'] > ll) & (df_agg['NRGT'] <= hl), 'size'] = size
+    df_agg.loc[df_agg['NRGT'] == 0, 'size'] = 7
             
     data = go.Scattermapbox(
         lat = df_agg['lat'],
@@ -50,7 +51,7 @@ def route_quality_map_with_filters(df, fname='quality_map', metric='ARQI_median'
                       color=df_agg['NRGT'],
                       reversescale=False,
                       cmin= 0,
-                      cmax=sizenorm-0.10*sizenorm,
+                      cmax=sizenorm,
                       colorscale='Inferno',
                       colorbar_title='# Routes > Threshold'),
         customdata=np.c_[df_agg['parent_sector'], df_agg['num_routes'], df_agg['NRGT'], df_agg['best_route']],
@@ -83,4 +84,4 @@ def route_quality_map_with_filters(df, fname='quality_map', metric='ARQI_median'
 if __name__ == '__main__':
 
     df = pd.read_pickle('RouteQualityData.pkl.zip', compression='zip')
-    route_quality_map_with_filters(df, metric='ARQI_median', metric_threshold=3.5, route_type='sport', grade_range='5.13a-5.13c')
+    route_quality_map_with_filters(df, metric='RQI_median', metric_threshold=3.5, route_type='sport', grade_range='5.10a-5.11a')

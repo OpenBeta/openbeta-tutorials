@@ -28,6 +28,7 @@ app.layout = html.Div([
                      {'label': 'All', 'value': 'all'}],
             style={'width':'40%'},
             value='All'),
+        html.Br(),
         html.Label('Route Quality Metric:'),
         dcc.Dropdown(
             id='metric',
@@ -39,20 +40,33 @@ app.layout = html.Div([
                      {'label': 'Median ARQI', 'value': 'ARQI_median'}],
             style={'width':'40%'},
             value='Mean Stars'),
+        html.Br(),
+        html.Label('Minimum Route Quality:'),
+        html.Br(),
         dcc.Input(
             id='metric_threshold',
             type='number',
             min=0.0, max=4.0, step=0.5,
             placeholder='Min Route Quality',
             style={'width': '12%'}),
+        html.Br(),
+        html.Br(),
+        html.Label('Min Grade (YDS):'),
+        html.Br(),
         dcc.Input(
             id='min_grade',
             type='text',
             placeholder='Min Grade'),
+        html.Br(),
+        html.Br(),
+        html.Label('Max Grade (YDS):'),
+        html.Br(),
         dcc.Input(
             id='max_grade',
             type='text',
             placeholder='Max Grade'),
+        html.Br(),
+        html.Br(),
         html.Button('Submit', id='button')
     ]),
     html.Br(),
@@ -123,7 +137,8 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
     size_limits = [(sizes[i], sizes[i+1], (i+1)*7) for i in range(len(sizes)-1)]
     
     for ll,hl,size in size_limits:
-        df_agg.loc[(df_agg['NRGT'] >= ll) & (df_agg['NRGT'] < hl), 'size'] = size
+        df_agg.loc[(df_agg['NRGT'] > ll) & (df_agg['NRGT'] <= hl), 'size'] = size
+    df_agg.loc[df_agg['NRGT'] == 0, 'size'] = 7
             
     data = go.Scattermapbox(
         lat = df_agg['lat'],
@@ -160,10 +175,8 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
                            projection_type='albers usa'))
     
     fig = go.Figure(data=data, layout=layout)    
-    fig.write_html('test.html')
 
     return fig
 
 if __name__ == '__main__':
-    #app.run_server(debug=True, port=5000)
     app.run_server()
