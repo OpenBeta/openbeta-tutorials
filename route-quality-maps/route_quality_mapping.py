@@ -16,8 +16,8 @@ def route_quality_map_with_filters(df, fname='quality_map', metric='ARQI_median'
         hi_rank = calculate_grade_rank(hi)                
         df = df[(lo_rank <= df['YDS_rank']) & (df['YDS_rank'] <= hi_rank)].copy()
     
-    cols = ['route_name', 'type_string', 'nopm_YDS', 'safety', metric]        
-    df_agg = df.groupby('sector_ID')['route_name', 'type_string', 'nopm_YDS', 'safety', metric].agg(lambda x: list(x))
+    cols = ['route_name', 'nopm_YDS', 'safety', metric]        
+    df_agg = df.groupby('sector_ID')['route_name', 'nopm_YDS', 'safety', metric].agg(lambda x: list(x))
     df_agg.columns = cols
     
     df_agg['sector_ID'] = df_agg.index
@@ -30,10 +30,9 @@ def route_quality_map_with_filters(df, fname='quality_map', metric='ARQI_median'
     df_agg['NRGT'] = df_agg.apply(lambda row: len([r for r in row[metric] if r >= metric_threshold]), axis=1)
     df_agg['lat'] = df_agg.apply(lambda row: row['parent_loc'][1], axis=1)
     df_agg['lon'] = df_agg.apply(lambda row: row['parent_loc'][0], axis=1)
-    
-    df_agg['hover'] = df_agg['parent_sector'] + '<br>' + \
-                      df_agg['num_routes'].astype(str) + ' routes' + '<br>' + \
-                      df_agg['NRGT'].astype(str) + ' routes > ' + str(metric_threshold) + ' stars'
+    df_agg['best_route'] = df_agg.apply(lambda row: 
+      [(n, np.round(m,2), g) for n,m,g in zip(row['route_name'],row[metric],row['nopm_YDS']) 
+      if m == max(row[metric])][0], axis=1)
     
     sizenorm = max(df_agg['NRGT'])
     df_agg['size'] = 0
@@ -54,25 +53,34 @@ def route_quality_map_with_filters(df, fname='quality_map', metric='ARQI_median'
                       cmax=sizenorm-0.10*sizenorm,
                       colorscale='Inferno',
                       colorbar_title='# Routes > Threshold'),
-        hovertext = df_agg['hover'],
-        hoverinfo = 'text',
+        customdata=np.c_[df_agg['parent_sector'], df_agg['num_routes'], df_agg['NRGT'], df_agg['best_route']],
         hoverlabel=dict(font_size=12,
-                        font_family='Arial')
+                        font_family='Arial',
+                        bgcolor='white'),
+        hovertemplate=
+        '<b>%{customdata[0]}</b><br>' +
+        'Total Routes: %{customdata[1]}<br>' +
+        'Routes > Min Quality: %{customdata[2]}<br><br>' +
+        '<b>Best Route</b><br>' + 
+        'Name: %{customdata[3][0]}<br>' +
+        'Grade: %{customdata[3][2]}<br>' +
+        'Rating: %{customdata[3][1]} stars' +
+        '<extra></extra>'
         )
     
     layout = dict(margin=dict(l=0, t=0, r=0, b=0, pad=0),
                   mapbox=dict(center=dict(lat=39,lon=-95),
-                                style='basic',
+                                style='light',
                                 zoom=3.5,
                                 accesstoken=AT),
                   geo = dict(scope='usa',
                              projection_type='albers usa',
                              resolution=110))
     
-    fig = go.Figure(data=data, layout=layout)    
+    fig = go.Figure(data=data, layout=layout)
     fig.write_html(fname + '.html')
 
 if __name__ == '__main__':
 
     df = pd.read_pickle('RouteQualityData.pkl.zip', compression='zip')
-    route_quality_map_with_filters(df, metric='RQI_median', metric_threshold=3.5, route_type='sport', grade_range='5.13a-5.13c')
+    route_quality_map_with_filters(df, metric='ARQI_median', metric_threshold=3.5, route_type='sport', grade_range='5.13a-5.13c')

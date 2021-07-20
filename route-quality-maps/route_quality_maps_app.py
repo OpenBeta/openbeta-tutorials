@@ -97,8 +97,8 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
     hi_rank = calculate_grade_rank(hi)                
     df = df[(lo_rank <= df['YDS_rank']) & (df['YDS_rank'] <= hi_rank)].copy()
     
-    cols = ['route_name', 'type_string', 'nopm_YDS', 'safety', metric]        
-    df_agg = df.groupby('sector_ID')['route_name', 'type_string', 'nopm_YDS', 'safety', metric].agg(lambda x: list(x))
+    cols = ['route_name', 'nopm_YDS', 'safety', metric]        
+    df_agg = df.groupby('sector_ID')['route_name', 'nopm_YDS', 'safety', metric].agg(lambda x: list(x))
     df_agg.columns = cols
 
     df_agg['sector_ID'] = df_agg.index
@@ -111,10 +111,9 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
     df_agg['NRGT'] = df_agg.apply(lambda row: len([r for r in row[metric] if r >= metric_threshold]), axis=1)
     df_agg['lat'] = df_agg.apply(lambda row: row['parent_loc'][1], axis=1)
     df_agg['lon'] = df_agg.apply(lambda row: row['parent_loc'][0], axis=1)
-    
-    df_agg['hover'] = df_agg['parent_sector'] + '<br>' + \
-                      df_agg['num_routes'].astype(str) + ' routes' + '<br>' + \
-                      df_agg['NRGT'].astype(str) + ' routes > ' + str(metric_threshold) + ' stars'
+    df_agg['best_route'] = df_agg.apply(lambda row: 
+      [(n, np.round(m,2), g) for n,m,g in zip(row['route_name'],row[metric],row['nopm_YDS']) 
+      if m == max(row[metric])][0], axis=1)
     
     sizenorm = max(df_agg['NRGT'])
     df_agg['size'] = 0
@@ -135,10 +134,19 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
                       cmax=sizenorm-0.10*sizenorm,
                       colorscale='Inferno',
                       colorbar_title='# Routes > Min'),
-        hovertext=df_agg['hover'],
-        hoverinfo='text',
-        hoverlabel=dict(font_size=12,
-                        font_family='Arial')
+        customdata=np.c_[df_agg['parent_sector'], 
+                         df_agg['num_routes'],
+                         df_agg['NRGT'],
+                         df_agg['best_route']],
+        hovertemplate=
+        '<b>%{customdata[0]}</b><br>' +
+        'Total Routes: %{customdata[1]}<br>' +
+        'Routes > Min Quality: %{customdata[2]}<br><br>' +
+        '<b>Best Route</b><br>' + 
+        'Name: %{customdata[3][0]}<br>' +
+        'Grade: %{customdata[3][2]}<br>' +
+        'Rating: %{customdata[3][1]} stars' +
+        '<extra></extra>'
         )
     
     layout = dict(margin=dict(l=0, t=0, r=0, b=0, pad=0),
