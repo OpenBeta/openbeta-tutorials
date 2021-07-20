@@ -3,7 +3,7 @@
 Examples of how to build interactive sector search maps using Python (Plotly, Mapbox, and Dash). The idea behind these maps is to allow a user to find
 sectors with a large number of high-quality routes of the desired type (sport, trad, or both) and in the desired difficulty range.
 
-### Environment
+### Environment and installation instructions
 
 These examples were built and tested using Python 3.8.5, with the following package versions:
 * numpy 1.19.2
