@@ -19,7 +19,10 @@ server = Flask(__name__)
 app = dash.Dash(server=server)
 
 app.layout = html.Div([
+
     html.Div([
+
+      html.Div([
         html.Label('Route Type:'),
         dcc.Dropdown(
             id='route_type',
@@ -28,7 +31,6 @@ app.layout = html.Div([
                      {'label': 'All', 'value': 'all'}],
             style={'width':'40%'},
             value='All'),
-        html.Br(),
         html.Label('Route Quality Metric:'),
         dcc.Dropdown(
             id='metric',
@@ -40,37 +42,53 @@ app.layout = html.Div([
                      {'label': 'Median ARQI', 'value': 'ARQI_median'}],
             style={'width':'40%'},
             value='Mean Stars'),
-        html.Br(),
-        html.Label('Minimum Route Quality:'),
-        html.Br(),
+        html.Label('Minimum Route Quality: '),
         dcc.Input(
             id='metric_threshold',
             type='number',
             min=0.0, max=4.0, step=0.5,
             placeholder='Min Route Quality',
-            style={'width': '12%'}),
+            style={'width': '12%', 'display': 'inline-block'}),
         html.Br(),
-        html.Br(),
-        html.Label('Min Grade (YDS):'),
-        html.Br(),
+        html.Label(' Min Grade (YDS): '),
         dcc.Input(
             id='min_grade',
             type='text',
-            placeholder='Min Grade'),
+            placeholder='Min Grade',
+            style={'display': 'inline-block'}),
         html.Br(),
-        html.Br(),
-        html.Label('Max Grade (YDS):'),
-        html.Br(),
+        html.Label(' Max Grade (YDS): '),
         dcc.Input(
             id='max_grade',
             type='text',
-            placeholder='Max Grade'),
-        html.Br(),
+            placeholder='Max Grade (YDS)',
+            style={'display': 'inline-block'}),
         html.Br(),
         html.Button('Submit', id='button')
-    ]),
-    html.Br(),
-    dcc.Graph(id='mymap'),
+      ], 
+      style={'padding': '.3rem', 
+             'marginTop': '1rem',
+             'marginLeft': '1rem',
+             'width': '85%', 
+             'flex-wrap': 'wrap',
+             'backgroundColor': 'white',
+             'border-radius': '10px',
+             'display': 'inline-block'}
+    ),
+
+    html.Div([
+      dcc.Graph(id='mymap')],
+      className='twleve columns', 
+      style={'padding': '.3rem', 
+             'marginTop': '1rem',
+             'marginLeft': '1rem',
+             'boxShadow': '#e3e3e3 4px 4px 2px',
+             'border-radius': '10px',
+             'backgroundColor': 'white'}
+    )
+  ],
+
+  style={'backgroundColor': 'white', 'width': '100%'})
 ])
 
 @app.callback(
