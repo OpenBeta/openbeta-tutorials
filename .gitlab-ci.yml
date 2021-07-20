@@ -35,7 +35,7 @@ deploy to prod:
   script: 
   - kubectl config set-context --current --namespace=$NAMESPACE
   - kubectl get deployment
-  - kubectl rollout restart deployment/rqm-api
+  - kubectl rollout restart deployment/rqm-app
   environment:
     name: prod
     url: https://rqm.openbeta.io
