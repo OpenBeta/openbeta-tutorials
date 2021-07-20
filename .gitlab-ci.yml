@@ -2,7 +2,7 @@ variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
   IMAGE_CURRENT: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-  IMAGE_LATEST:  $CI_REGISTRY_IMAGE:latest
+  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
   NAMESPACE: openbeta
 
 stages:
@@ -35,8 +35,7 @@ deploy to prod:
   script: 
   - kubectl config set-context --current --namespace=$NAMESPACE
   - kubectl get deployment
-  - kubectl rollout restart deployment/rec-api
+  - kubectl rollout restart deployment/rqm-api
   environment:
     name: prod
-    url: https://rec.openbeta.io
-
+    url: https://rqm.openbeta.io
