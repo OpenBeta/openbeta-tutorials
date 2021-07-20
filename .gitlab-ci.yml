@@ -1,0 +1,42 @@
+variables:
+  DOCKER_HOST: tcp://docker:2375/
+  DOCKER_DRIVER: overlay2
+  IMAGE_CURRENT: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST:  $CI_REGISTRY_IMAGE:latest
+  NAMESPACE: openbeta
+
+stages:
+  - build
+  - stage
+
+build image:
+   stage: build
+
+   image: docker:stable
+
+   services:
+      - docker:dind
+      
+   before_script:
+      - docker login -u $CI_REGISTRY_USER -p $CI_REGISTRY_PASSWORD $CI_REGISTRY
+
+   script:
+      - docker pull $IMAGE_LATEST || true
+      - docker build --cache-from $IMAGE_LATEST --tag $IMAGE_CURRENT --tag $IMAGE_LATEST route-quality-maps
+      - docker push $IMAGE_CURRENT
+      - docker push $IMAGE_LATEST
+
+deploy to prod:
+  stage: stage
+  image: 
+    name: bitnami/kubectl:1.15
+    entrypoint: [""]
+
+  script: 
+  - kubectl config set-context --current --namespace=$NAMESPACE
+  - kubectl get deployment
+  - kubectl rollout restart deployment/rec-api
+  environment:
+    name: prod
+    url: https://rec.openbeta.io
+

@@ -1,0 +1,12 @@
+# docker-compose.yml
+version: '3'
+networks:
+  myapp-network:
+services:
+  # main application
+  rqm:
+    container_name: rqm
+    build:
+      .
+    ports:
+      - "8000:8000"
