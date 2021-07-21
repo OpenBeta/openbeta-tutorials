@@ -116,7 +116,12 @@ tutorial = html.Div([
     html.P('Descriptions coming soon', className='lead')
 ], style=TUTORIAL_STYLE)
 
-content = html.Div([dcc.Graph(id='mymap')], style=MAP_STYLE)
+content = html.Div([dcc.Graph(id='mymap', 
+                              figure={
+                              'layout': go.Layout(xaxis={'showgrid': False, 'zeroline': False, 'visible': False}, 
+                                                  yaxis={'showgrid': False, 'zeroline': False, 'visible': False})
+                              })], 
+    style=MAP_STYLE)
 
 app.layout = html.Div([
                 dcc.Tabs([
