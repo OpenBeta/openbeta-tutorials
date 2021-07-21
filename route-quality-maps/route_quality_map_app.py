@@ -203,4 +203,4 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
     return fig
 
 if __name__ == '__main__':
-    app.run_server(port=5000)
+    app.run_server()
