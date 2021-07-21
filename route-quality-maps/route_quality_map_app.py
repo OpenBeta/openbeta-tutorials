@@ -26,17 +26,34 @@ SIDEBAR_STYLE = {
     'bottom': 0,
     'width': '14rem',
     'padding': '2rem 1rem',
-    'background-color': '#f8f9fa',
+    'margin-top': '4rem',
+    'margin-bottom': '1rem',
+    'margin-left': '0.75rem',
+    'background-color': '#dce3f9',
     'font-family': 'Helvetica',
-    'boxShadow': '#e3e3e3 4px 4px 2px',
+    'boxShadow': '#7491e9 4px 4px 2px',
     'border-radius': '10px'
 }
 
 MAP_STYLE = {
+    'margin-top': '2rem',
     'margin-left': '16rem',
     'margin-right': '2rem',
     'padding': '2rem 1rem',
     'background-color': 'white',
+}
+
+TAB_STYLE = {
+    'background-color': 'white',
+    'align-items': 'center',
+    'justify-content': 'center',
+    'padding':'4px',
+    'font-family': 'Helvetica',
+    'height': '5vh'
+}
+
+TUTORIAL_STYLE = {
+    'font-family': 'Helvetica',
 }
 
 sidebar = html.Div([
@@ -93,9 +110,24 @@ sidebar = html.Div([
     ])
 ], style=SIDEBAR_STYLE)
 
+tutorial = html.Div([
+    html.H2('Route Quality Metric Descriptions', className='display-4'),
+    html.Hr(),
+    html.P('Descriptions coming soon', className='lead')
+], style=TUTORIAL_STYLE)
+
 content = html.Div([dcc.Graph(id='mymap')], style=MAP_STYLE)
 
-app.layout = html.Div([sidebar, content])
+app.layout = html.Div([
+                dcc.Tabs([
+                    dcc.Tab([sidebar, content], label='Map', 
+                        style={'padding': '0','line-height': '5vh'}, 
+                        selected_style={'padding': '0','line-height': '5vh', 'background-color': '#dce3f9'}), 
+                    dcc.Tab(tutorial, label='Tutorial', 
+                        style={'padding': '0','line-height': '5vh'},
+                        selected_style={'padding': '0','line-height': '5vh', 'background-color': '#dce3f9'})
+                    ], style=TAB_STYLE)
+                ])
 
 @app.callback(
     Output(component_id='mymap', component_property='figure'),
@@ -174,7 +206,7 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
                       cmin=0,
                       cmax=sizenorm-0.10*sizenorm,
                       colorscale='Inferno',
-                      colorbar_title='# Routes > Min'),
+                      colorbar_title='# Routes<br>\u2265 Min'),
         customdata=np.c_[df_agg['parent_sector'], 
                          df_agg['num_routes'],
                          df_agg['NRGT'],
@@ -203,5 +235,5 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
     return fig
 
 if __name__ == '__main__':
-    app.run_server()
-    #app.run_server(port=8000)
+    #app.run_server()
+    app.run_server(port=8000)
