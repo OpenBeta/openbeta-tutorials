@@ -5,6 +5,7 @@ from grade_rank_calculation import calculate_grade_rank
 import dash
 import dash_core_components as dcc
 import dash_html_components as html
+import dash_bootstrap_components as dbc
 from dash.dependencies import Input, Output, State
 from dash.exceptions import PreventUpdate
 from flask import Flask
@@ -18,21 +19,44 @@ input_ids = ['metric', 'metric_threshold', 'route_type', 'grade_range']
 server = Flask(__name__)
 app = dash.Dash(server=server)
 
-app.layout = html.Div([
+SIDEBAR_STYLE = {
+    'position': 'fixed',
+    'top': 0,
+    'left': 0,
+    'bottom': 0,
+    'width': '14rem',
+    'padding': '2rem 1rem',
+    'background-color': '#f8f9fa',
+    'font-family': 'Helvetica',
+    'boxShadow': '#e3e3e3 4px 4px 2px',
+    'border-radius': '10px'
+}
 
-    html.Div([
+MAP_STYLE = {
+    'margin-left': '16rem',
+    'margin-right': '2rem',
+    'padding': '2rem 1rem',
+    'background-color': 'white',
+}
 
-      html.Div([
+sidebar = html.Div([
+        
+    html.H2('Filters', className='display-4'),
+    html.Hr(),
+    html.P('Subset routes by type, range of difficulty, and minimum quality (0-4 stars)', className='lead'),
+
+    dbc.Col([
         html.Label('Route Type:'),
-        dcc.Dropdown(
+        dbc.Row(dcc.Dropdown(
             id='route_type',
             options=[{'label': 'Trad', 'value': 'trad'},
                      {'label': 'Sport', 'value': 'sport'},
                      {'label': 'All', 'value': 'all'}],
-            style={'width':'40%'},
-            value='All'),
+            style={'width':'91%'},
+            value='All')),
+        html.Br(),
         html.Label('Route Quality Metric:'),
-        dcc.Dropdown(
+        dbc.Row(dcc.Dropdown(
             id='metric',
             options=[{'label': 'Mean Stars', 'value': 'mean_rating'},
                      {'label': 'Median Stars', 'value': 'median_rating'},
@@ -40,55 +64,38 @@ app.layout = html.Div([
                      {'label': 'Median RQI', 'value': 'RQI_median'},
                      {'label': 'Mean ARQI', 'value': 'ARQI_mean'},
                      {'label': 'Median ARQI', 'value': 'ARQI_median'}],
-            style={'width':'40%'},
-            value='Mean Stars'),
+            style={'width':'91%'},
+            value='Mean Stars')),
         html.Br(),
         html.Label('Minimum Route Quality: '),
-        dcc.Input(
+        dbc.Row(dcc.Input(
             id='metric_threshold',
             type='number',
             min=0.0, max=4.0, step=0.5,
-            placeholder='Min Route Quality',
-            style={'width': '14%', 'display': 'inline-block'}),
+            placeholder=3.0,
+            style={'width': '80%'})),
+        html.Br(),
         html.Label(' Min Grade (YDS): '),
-        dcc.Input(
+        dbc.Row(dcc.Input(
             id='min_grade',
             type='text',
-            placeholder='Min Grade',
-            style={'display': 'inline-block'}),
+            placeholder='5.10a',
+            style={'width': '80%'})),
+        html.Br(),
         html.Label(' Max Grade (YDS): '),
-        dcc.Input(
+        dbc.Row(dcc.Input(
             id='max_grade',
             type='text',
-            placeholder='Max Grade (YDS)',
-            style={'display': 'inline-block'}),
-        html.Br(),
+            placeholder='5.11a',
+            style={'width': '80%'})),
         html.Br(),
         html.Button('Submit', id='button')
-      ], 
-      style={'padding': '.3rem', 
-             'marginTop': '1rem',
-             'marginLeft': '1rem',
-             'width': '85%', 
-             'backgroundColor': 'white',
-             'border-radius': '10px',
-             'display': 'inline-block'}
-    ),
+    ])
+], style=SIDEBAR_STYLE)
 
-    html.Div([
-      dcc.Graph(id='mymap')],
-      className='twleve columns', 
-      style={'padding': '.3rem', 
-             'marginTop': '1rem',
-             'marginLeft': '1rem',
-             'boxShadow': '#e3e3e3 4px 4px 2px',
-             'border-radius': '10px',
-             'backgroundColor': 'white'}
-    )
-  ],
+content = html.Div([dcc.Graph(id='mymap')], style=MAP_STYLE)
 
-  style={'backgroundColor': 'white', 'width': '100%'})
-])
+app.layout = html.Div([sidebar, content])
 
 @app.callback(
     Output(component_id='mymap', component_property='figure'),
@@ -196,4 +203,4 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
     return fig
 
 if __name__ == '__main__':
-    app.run_server()
+    app.run_server(port=5000)
