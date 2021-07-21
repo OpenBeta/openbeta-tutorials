@@ -182,7 +182,7 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
         hovertemplate=
         '<b>%{customdata[0]}</b><br>' +
         'Total Routes: %{customdata[1]}<br>' +
-        'Routes > Min Quality: %{customdata[2]}<br><br>' +
+        'Routes \u2265 Min Quality: %{customdata[2]}<br><br>' +
         '<b>Best Route</b><br>' + 
         'Name: %{customdata[3][0]}<br>' +
         'Grade: %{customdata[3][2]}<br>' +
@@ -204,3 +204,4 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
 
 if __name__ == '__main__':
     app.run_server()
+    #app.run_server(port=8000)
