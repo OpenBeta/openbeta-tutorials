@@ -1,15 +1,14 @@
 variables:
   DOCKER_HOST: tcp://docker:2375/
   DOCKER_DRIVER: overlay2
-  IMAGE_CURRENT: $CI_REGISTRY_IMAGE:$CI_COMMIT_SHORT_SHA
-  IMAGE_LATEST: $CI_REGISTRY_IMAGE:latest
-  NAMESPACE: openbeta
+  IMAGE_CURRENT: ${CI_REGISTRY_IMAGE}/rqm:$CI_COMMIT_SHORT_SHA
+  IMAGE_LATEST: ${CI_REGISTRY_IMAGE}/rqm:latest
 
 stages:
   - build
   - stage
 
-build image:
+build rqm image:
    stage: build
 
    image: docker:stable
@@ -26,16 +25,26 @@ build image:
       - docker push $IMAGE_CURRENT
       - docker push $IMAGE_LATEST
 
-deploy to prod:
+deploy rqm:
   stage: stage
   image: 
-    name: bitnami/kubectl:1.15
-    entrypoint: [""]
+    name: bitnami/git:latest
 
+  before_script:
+  - mkdir -p ~/.bin
+  - curl -s "https://raw.githubusercontent.com/kubernetes-sigs/kustomize/master/hack/install_kustomize.sh"  | bash -s -- ~/.bin
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+  - mkdir -p ~/.ssh
+  - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
   script: 
-  - kubectl config set-context --current --namespace=$NAMESPACE
-  - kubectl get deployment
-  - kubectl rollout restart deployment/rqm-app
-  environment:
-    name: prod
-    url: https://rqm.openbeta.io
+  - git clone git@gitlab.com:openbeta/devops/rqm-argocd.git
+  - cd rqm-argocd && git checkout kustomize
+  - ~/.bin/kustomize edit set image $IMAGE_CURRENT
+  - git config --global user.name $GITLAB_USER_NAME
+  - git config --global user.email $GITLAB_USER_EMAIL
+  - git commit -am "Update version to $CI_COMMIT_SHORT_SHA"
+  - git push
+
