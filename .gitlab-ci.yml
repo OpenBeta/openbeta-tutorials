@@ -41,7 +41,7 @@ deploy rqm:
   - chmod 644 ~/.ssh/known_hosts
   script: 
   - git clone git@gitlab.com:openbeta/devops/rqm-argocd.git
-  - cd rqm-argocd && git checkout kustomize
+  - cd rqm-argocd
   - ~/.bin/kustomize edit set image $IMAGE_CURRENT
   - git config --global user.name $GITLAB_USER_NAME
   - git config --global user.email $GITLAB_USER_EMAIL
