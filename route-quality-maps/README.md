@@ -5,30 +5,27 @@ sectors with a large number of high-quality routes of the desired type (sport, t
 
 ### Environment and installation instructions
 
-These examples were built and tested using Python 3.8.5, with the following package versions:
-* numpy 1.19.2
-* pandas 1.1.3
-* plotly 5.1.0
-* dash 1.20.0
+These examples were built and tested using Python 3.8.5, the required packages can be installed in a Python virtual environment (after installing virtualenv), thus:
 
-These are the current (7/16/21) default versions installed using Conda. Probably the examples will work with other versions of Python 3 and packages.
+```
+cd /path/to/openbeta-tutorials-master/route-quality-maps
+virtualenv env --python=python3.8.5
+source env/bin/activate
+pip3 install -r requirements.txt
+```
 
 ### Current Status
 
 These are the files currently included with the example:
-* __route_quality_mapping.py__ is a Python script used to create individual interactive .html maps according to filter criteria. The maps display 
+* __route_quality_map_generation.py__ is a Python script used to create individual interactive .html maps according to filter criteria. The maps display 
 areas as points with size corresponding to the number of routes in the area that fulfill the search criteria (type, grade, and minimum quality). 
 The areas are also colored by this number (black = few routes that fulfill the criteria, yellow = many routes that fulfill the criteria). Hovering over
 each area will display the area name, total number of routes, and the number of routes fulfilling the filter criteria.
 * __route_quality_maps_app.py__ is a Python script that runs a Dash app that allows the user to change the filter criteria and rerun. The same information
-as described in the previous point is included with each map. Currently the app can be started in debug mode on the users local machine. Just run the Python
-script thus:
+as described in the previous point is included with each map. The app can be started on the user's local machine like this:
 ```
-python route_quality_maps_app.py
+python route_quality_map_app.py
 ```
-* __RouteQualityData.pkl.zip__ contains the data used by the above Python scripts.
-
-### Notes
-
-Note that the mapping functions require a Mapbox access token. One of these is provided here, this token may be deleted or changed at any time. Users
-are encouraged to get their own access token (free and easy, see https://www.mapbox.com/).
+* Or, there is a live demo of this app [here](https://rqm.openbeta.io/).
+* __RouteQualityData.pkl.zip__ contains the data used by the above Python scripts see the [curated_datasets](https://github.com/OpenBeta/climbing-data/tree/main/curated_datasets) 
+in the climbing-data for more information.
