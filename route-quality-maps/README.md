@@ -14,7 +14,7 @@ source env/bin/activate
 pip3 install -r requirements.txt
 ```
 
-### Current Status
+### Current status
 
 These are the files currently included with the example:
 * __route_quality_map_generation.py__ is a Python script used to create individual interactive .html maps according to filter criteria. The maps display 
