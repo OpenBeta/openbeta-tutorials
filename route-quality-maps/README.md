@@ -26,6 +26,6 @@ as described in the previous point is included with each map. The app can be sta
 ```
 python route_quality_map_app.py
 ```
-* Or, there is a live demo of this app [here](https://rqm.openbeta.io/).
+* Or, there is a live demo of the app [here](https://rqm.openbeta.io/).
 * __RouteQualityData.pkl.zip__ contains the data used by the above Python scripts see the [curated_datasets](https://github.com/OpenBeta/climbing-data/tree/main/curated_datasets) 
 in the climbing-data for more information.
