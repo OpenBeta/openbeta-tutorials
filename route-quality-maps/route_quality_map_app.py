@@ -13,9 +13,6 @@ from flask import Flask
 DF = pd.read_pickle('RouteQualityData.pkl.zip', compression='zip')
 AT = open('.mapbox_token').read()
 
-input_types = ['text', 'number']
-input_ids = ['metric', 'metric_threshold', 'route_type', 'grade_range']
-
 server = Flask(__name__)
 app = dash.Dash(server=server)
 
@@ -113,7 +110,18 @@ sidebar = html.Div([
 tutorial = html.Div([
     html.H2('Route Quality Metric Descriptions', className='display-4'),
     html.Hr(),
-    html.P('Descriptions coming soon', className='lead')
+    html.P('Descriptions coming soon', className='lead'),
+    html.H2('Known Gaps in the Data', className='display-4'),
+    html.Hr(),
+    html.P('These are the known gaps and inconsistencies in the current OpenBeta dataset, \
+            taken from Mountain Project in August 2020.', className='lead'),
+    html.Ul([html.Li('Bouldering user rating data is missing in the current dataset.'),
+             html.Li('Wyoming user rating data (for all climb types) is also missing. \
+                For now: Ten Sleep or Wild Iris in the Summer/Fall, Sinks Canyon in the Winter, \
+                Vedauwoo if you like pain, and Cirque of Towers if you do cardio.'),
+             html.Li('Some route names and/or grades have changed since the data was collected.'),
+             html.Li('Snow, mixed (as in ice/rock), ice climbs, and non-technical climbs are omitted (on purpose).') 
+            ])
 ], style=TUTORIAL_STYLE)
 
 content = html.Div([dcc.Graph(id='mymap', 
@@ -199,7 +207,7 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
     
     for ll,hl,size in size_limits:
         df_agg.loc[(df_agg['NRGT'] > ll) & (df_agg['NRGT'] <= hl), 'size'] = size
-    df_agg.loc[df_agg['NRGT'] == 0, 'size'] = 7
+    df_agg.loc[df_agg['NRGT'] == 0, 'size'] = 5
             
     data = go.Scattermapbox(
         lat = df_agg['lat'],
