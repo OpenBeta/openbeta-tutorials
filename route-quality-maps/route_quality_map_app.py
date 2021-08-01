@@ -138,7 +138,9 @@ tutorial = html.Div([
     html.P('A metric of route quality calculated from the average rating (mean or median) and incorporating the number of ratings (votes). RQI is defined as S(1-1/N), where \
             S is the average rating and N is the number of votes used to calculate S. The 1-1/N term reduces RQI significantly for routes with < 10 votes. For example, a route \
             with 3 votes of 4 stars has an RQI of 4(1-1/3) = 2.67, and a route with an average rating of 3.5 stars from 1,000 votes has an RQI of 3.5(1-1/1000) = 3.5 (after rounding). \
-            The efficacy of RQI results from the assumption that a classic route only achieves that status if many climbers agree, anything else could only be considered a "future classic."'),
+            The efficacy of RQI results from the assumption that a classic route only achieves that status if many climbers agree, anything else could only be considered a "future classic." \
+            Finally, the popularity of a climb (the number of votes, or N) becomes less important after ~50 votes, so the average rating dominates at this point. This means that ultra-popular \
+            climbs (hundreds or thousands of ratings) will not dominate the rankings.'),
     html.P('Pros:'),
     html.Ul([html.Li('Easily interpretable, like average stars since it has the same range (0-4) and meaning.'),
              html.Li('Incorporates popularity and average rating in a single metric.')]),
