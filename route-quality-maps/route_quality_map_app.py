@@ -108,9 +108,59 @@ sidebar = html.Div([
 ], style=SIDEBAR_STYLE)
 
 tutorial = html.Div([
-    html.H2('Route Quality Metric Descriptions', className='display-4'),
+    html.H2('Route Quality Metrics', className='display-4'),
     html.Hr(),
-    html.P('Descriptions coming soon', className='lead'),
+    html.P('This map is designed to show climbing areas in the U.S. with relatively high numbers of quality routes according to six metrics. \
+            For each route, we calculate these metrics from a distribution of ratings (0-4 stars), with each rating corresponding to the opinion of an individual climber. \
+            So, each metric attempts to measure the average impression of a cohort of climbers (between 1 and ~2,000 individuals). \
+            Therefore, no metric presented here can find subjective classics or "classics for you". \
+            Rather, we are looking for "true classics" or routes that many climbers agree are high quality. The metrics:', className='lead'),
+    
+    html.H3('Mean Stars'),
+    html.P('The mean rating from the distribution of individual ratings.'),
+    html.P('Pros:'),
+    html.Ul([html.Li('Incorporates all opinions, even outlying ones.')]),
+    html.P('Cons:'),
+    html.Ul([html.Li('Many routes have 4 star ratings from only a few votes (probably the F.A. and their friends).'),
+             html.Li('Sensitive to outliers. This could be considered a pro (see above), however, even ultra-classics are likely to have some 1-star votes \
+                      which are likely from climbers with unconventional taste.'),
+             html.Li('Mean is best used with continuous and normally distributed data. Rating data is non-continuous and is not distributed normally.')]),
+   
+    html.H3('Median Stars'),
+    html.P('The interpolated median rating from the distribution of individual ratings. The interpolated median is often used when dealing with discrete variables (e.g. star ratings taking \
+            values of 0, 1, 2, 3, or 4) as it can give more resolution than the median. '),
+    html.P('Pros:'),
+    html.Ul([html.Li('Often a better measure of central tendency (average) than mean for ordinal data (like user ratings) that is non-continuous and not distributed normally.')]),
+    html.P('Cons:'),
+    html.Ul([html.Li('Again, average ratings are not expected to be accurate for routes with only a few votes.')]),
+
+    html.H3('Route Quality Index (RQI)'),
+    html.P('A metric of route quality calculated from the average rating (mean or median) and incorporating the number of ratings (votes). RQI is defined as S(1-1/N), where \
+            S is the average rating and N is the number of votes used to calculate S. The 1-1/N term reduces RQI significantly for routes with < 10 votes. For example, a route \
+            with 3 votes of 4 stars has an RQI of 4(1-1/3) = 2.67, and a route with an average rating of 3.5 stars from 1,000 votes has an RQI of 3.5(1-1/1000) = 3.5 (after rounding). \
+            The efficacy of RQI results from the assumption that a classic route only achieves that status if many climbers agree, anything else could only be considered a "future classic."'),
+    html.P('Pros:'),
+    html.Ul([html.Li('Easily interpretable, like average stars since it has the same range (0-4) and meaning.'),
+             html.Li('Incorporates popularity and average rating in a single metric.')]),
+    html.P('Cons:'),
+    html.Ul([html.Li('Biased towards easier routes, since these tend to see more ascents and thus get more votes. This is not so much of an issue when looking in narrow difficulty ranges \
+                      (e.g. 5.11a to 5.11b).'),
+             html.Li('Like any metric that incorporates popularity RQI is likely to favor more accessible climbs near population centers.'),
+             html.Li('The scaling of rating with votes (i.e. 1-1/N) is somewhat arbitrary, although it seems to be about right in practice.')]),
+
+    html.H3('Adjusted Route Quality Index (ARQI)'),
+    html.P('A metric of route quality calculated from the average rating (mean or median) and incorporating the number of votes (like RQI). However, the number of votes is weighted to correct \
+            for the difficulty bias of RQI. Specifically, votes for harder routes are given more weight than votes for easier routes. For each grade/route type (sport and trad) combination, \
+            we can estimate the number of votes per route as the total number of votes divided by the number of routes (both these values are calculated from the OpenBeta dataset). These voting rates \
+            can then be used to weight the number of votes for any route according to its grade and type. For example, 5.9+ sport routes have 33.2 votes per route (the maximum) \
+            whereas 5.13a sport routes have 8.5 votes per route. Therefore, when calculating ARQI, the number of votes for a 5.13a sport route is multiplied by 33.2/8.5 = 3.9. In other words, a 5.13a with \
+            10 votes would be considered to have 39 votes when calculating ARQI.'),
+    html.P('Pros:'),
+    html.Ul([html.Li('Removes the difficulty bias of RQI, so it can be used when looking at routes in a larger difficulty range.'),
+             html.Li('More complicated to calculate and relies on the accurate estimation of votes per climb (i.e. requires a large dataset).')]),
+    html.P('Cons:'),
+    html.Ul([html.Li('The same issues as RQI, minus the difficuly bias.')]),
+
     html.H2('Known Gaps in the Data', className='display-4'),
     html.Hr(),
     html.P('These are the known gaps and inconsistencies in the current OpenBeta dataset, \
@@ -120,8 +170,7 @@ tutorial = html.Div([
                 For now: Ten Sleep or Wild Iris in the Summer/Fall, Sinks Canyon in the Winter, \
                 Vedauwoo if you like pain, and Cirque of Towers if you do cardio.'),
              html.Li('Some route names and/or grades have changed since the data was collected.'),
-             html.Li('Snow, mixed (as in ice/rock), ice climbs, and non-technical climbs are omitted (on purpose).') 
-            ])
+             html.Li('Snow, mixed (as in ice/rock), ice climbs, and non-technical climbs are omitted (on purpose).')])
 ], style=TUTORIAL_STYLE)
 
 content = html.Div([dcc.Graph(id='mymap', 
