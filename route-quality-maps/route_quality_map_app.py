@@ -12,6 +12,9 @@ from flask import Flask
 
 DF = pd.read_pickle('RouteQualityData.pkl.zip', compression='zip')
 AT = open('.mapbox_token').read()
+present_states = ['all'] + list(sorted(set(DF['state'])))
+
+state_options = [{'label':s, 'value': s} for s in present_states]
 
 server = Flask(__name__)
 app = dash.Dash(server=server)
@@ -81,6 +84,13 @@ sidebar = html.Div([
             style={'width':'91%'},
             value='Mean Stars')),
         html.Br(),
+        html.Label('State:'),
+        dbc.Row(dcc.Dropdown(
+            id='state',
+            options=state_options,
+            style={'width':'91%'},
+            value='All')),
+        html.Br(),
         html.Label('Minimum Route Quality: '),
         dbc.Row(dcc.Input(
             id='metric_threshold',
@@ -89,7 +99,7 @@ sidebar = html.Div([
             placeholder=3.0,
             style={'width': '80%'})),
         html.Br(),
-        html.Label(' Min Grade (YDS): '),
+        html.Label('Min Grade (YDS): '),
         dbc.Row(dcc.Input(
             id='min_grade',
             type='text',
@@ -198,12 +208,13 @@ app.layout = html.Div([
     [Input(component_id='button', component_property='n_clicks')],
     [State(component_id='route_type', component_property='value'),
      State(component_id='metric', component_property='value'),
+     State(component_id='state', component_property='value'),
      State(component_id='metric_threshold', component_property='value'),
      State(component_id='min_grade', component_property='value'),
      State(component_id='max_grade', component_property='value')],
 )
 
-def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_grade):
+def update_map(n_clicks, route_type, metric, state, metric_threshold, min_grade, max_grade):
 
     if not n_clicks:
        raise PreventUpdate
@@ -213,6 +224,9 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
 
     if metric is None:
         metric = 'RQI_mean'
+
+    if state is None:
+        state = 'all'
 
     if metric_threshold is None:
         metric_threshold = 3.5
@@ -227,6 +241,9 @@ def update_map(n_clicks, route_type, metric, metric_threshold, min_grade, max_gr
 
     if route_type != 'all':
         df = df[df['type_string'] == route_type].copy()
+
+    if state != 'all':
+        df = df[df['state'] == state].copy()
      
     lo, hi = min_grade, max_grade
     lo_rank = calculate_grade_rank(lo)
