@@ -235,7 +235,7 @@ def update_map(n_clicks, route_type, metric, state, metric_threshold, min_grade,
         min_grade = '5.6'
 
     if max_grade is None:
-        min_grade = '5.15a'
+        max_grade = '5.15a'
 
     df = DF.copy()
 
