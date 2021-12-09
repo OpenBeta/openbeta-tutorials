@@ -1,0 +1,6 @@
+virtualenv env --python=python3
+source env/bin/activate
+pip3 install gensim (will install numpy and scipy)
+pip3 install pandas
+pip3 install sklearn
+pip3 install nltk
