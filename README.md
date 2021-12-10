@@ -1,3 +1,3 @@
 ## Tutorials
 
-How to work with climbing data
+Some examples of neat things one can do with climbing data.
