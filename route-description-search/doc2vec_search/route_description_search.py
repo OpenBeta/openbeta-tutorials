@@ -1,5 +1,4 @@
 import re
-import sys
 import string
 import math
 import pickle
@@ -7,6 +6,7 @@ import gzip
 import pandas as pd
 import numpy as np
 import warnings
+import argparse
 
 warnings.filterwarnings('ignore')
 from gensim.parsing.preprocessing import remove_stopwords
@@ -42,11 +42,18 @@ def description_search(model, desc, routeID_key, route_data, topn=3):
     """
 
     tokens = clean_desc(desc)  # get the cleaned description
-    inferred_vector = model.infer_vector(tokens, epochs=100)  # convert to a vector
-    sims = model.dv.most_similar([inferred_vector], topn=topn)  # returns similar documents
-    res = route_data[route_data['route_ID'].isin([routeID_key[x[0]]
-                     for x in sims])].copy()
-    res['similarity'] = [x[1] for x in sims]
+    inferred_vector = model.infer_vector(tokens, epochs=1000)  # convert to a vector
+    sims = model.dv.most_similar(positive=[inferred_vector], topn=topn)
+    res = pd.DataFrame()
+    route_data.route_ID = route_data.route_ID.astype(int)
+
+    for doc_id, score in sims:  # make sure the routes are in the correct order
+
+        route_id = routeID_key[doc_id]
+        route = route_data.query(f'route_ID == {route_id}').copy()
+        route['score'] = score
+        res = pd.concat([res, route])
+
     res['query'] = desc
     res.reset_index(drop=True, inplace=True)
 
@@ -65,7 +72,7 @@ def print_search_results(res):
     for i, row in res.iterrows():
 
         grade = ' '.join([g for g in (row.YDS, row.Vermin) if g is not None])
-        sim = np.round(row.similarity, 2)
+        sim = np.round(row.score, 2)
         name = row.route_name
         desc = ' '.join(row.description)
         nc = len(desc)
@@ -92,6 +99,13 @@ def print_search_results(res):
 
 if __name__ == '__main__':
 
+    parser = argparse.ArgumentParser(description='Arguments for running the doc2vec search')
+    parser.add_argument('-d', action='store', dest='desc', type=str,
+                        required=False, default='guano', help='a hypothetical route description')
+    parser.add_argument('-n', action='store', dest='topn', type=int,
+                        required=False, default=3, help='the number of results to return')
+    args = parser.parse_args()
+
     model = Doc2Vec.load('doc2vec.model')
 
     with gzip.open('search_data.pkl.zip', 'rb') as key:
@@ -100,6 +114,5 @@ if __name__ == '__main__':
     route_data = search_data['route_data']
     routeID_key = search_data['routeID_key']
 
-    desc = sys.argv[1]
-    res = description_search(model, desc, routeID_key, route_data)
+    res = description_search(model, args.desc, routeID_key, route_data, topn=args.topn)
     print_search_results(res)
