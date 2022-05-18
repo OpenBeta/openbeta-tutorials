@@ -41,9 +41,9 @@ def description_search(model, desc, routeID_key, route_data, topn=3):
         returns all the data (contained in route_data) for the topn routes
     """
 
-    tokens = clean_desc(desc)
-    inferred_vector = model.infer_vector(tokens, epochs=100)
-    sims = model.dv.most_similar([inferred_vector], topn=topn)
+    tokens = clean_desc(desc)  # get the cleaned description
+    inferred_vector = model.infer_vector(tokens, epochs=100)  # convert to a vector
+    sims = model.dv.most_similar([inferred_vector], topn=topn)  # returns similar documents
     res = route_data[route_data['route_ID'].isin([routeID_key[x[0]]
                      for x in sims])].copy()
     res['similarity'] = [x[1] for x in sims]
